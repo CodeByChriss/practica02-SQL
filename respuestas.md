@@ -27,8 +27,6 @@ ORDER BY
 
 **Comentario:** Utilizo los alias en ambos campos del select para poder visualizarlo en español. Utilizo ::numeric en unit_price dentro del round() para evitar errores con el tipo de dato real e indico el número 2 ya que es la cantidad de decimales que quiero. En el where he usado between para poder filtrar con un rango y luego comparo discontinued = 0 porque 0 es que el producto está continuado y 1 es que está descontinuado.
 
----
-
 ## Pregunta 2 — Concentración geográfica de la cartera
 
 **Enunciado:** Dirección quiere saber en qué mercados está realmente concentrada la base de clientes antes de decidir dónde abrir delegación.
@@ -134,7 +132,7 @@ SELECT
 	OD.QUANTITY AS CANTIDAD,
 	OD.DISCOUNT AS DESCUENTO,
 	ROUND(
-		OD.UNIT_PRICE::NUMERIC * OD.QUANTITY::NUMERIC * (1 - OD.DISCOUNT::NUMERIC),
+		OD.UNIT_PRICE::NUMERIC * OD.QUANTITY * (1 - OD.DISCOUNT::NUMERIC),
 		2
 	) AS IMPORTE_LINEA
 FROM
@@ -149,5 +147,36 @@ WHERE
 **Resultado:**
 
 ![Resultado Pregunta 5](images/respuesta05.png)
+
+**Comentario:** ...
+
+## Pregunta 6 — Ranking de categorías por facturación
+
+**Enunciado:** Comité de dirección: ¿qué familias de producto sostienen realmente el negocio?
+Calcula la facturación total de cada categoría durante toda la historia de la compañía. Muestra el nombre de la categoría, el número de líneas de pedido que ha generado, el número de productos distintos vendidos y la facturación total. Incluye únicamente las categorías que superen los **100.000 euros** de facturación, ordenadas de mayor a menor.
+
+**Consulta:**
+
+```sql
+SELECT
+	C.CATEGORY_NAME AS CATEGORIA,
+	COUNT(*) AS NUM_LINEAS,
+	COUNT(DISTINCT P.PRODUCT_ID) AS NUM_PRODUCTOS,
+	ROUND(SUM(P.UNIT_PRICE::NUMERIC * O.QUANTITY * (1 - O.DISCOUNT::NUMERIC)), 2) AS FACTURACION
+FROM
+	PRODUCTS P
+	INNER JOIN CATEGORIES C USING (CATEGORY_ID)
+	INNER JOIN ORDER_DETAILS O USING (PRODUCT_ID)
+GROUP BY
+	C.CATEGORY_NAME
+HAVING
+	SUM(P.UNIT_PRICE::NUMERIC * O.QUANTITY * (1 - O.DISCOUNT::NUMERIC)) > 100000
+ORDER BY
+	SUM(P.UNIT_PRICE::NUMERIC * O.QUANTITY * (1 - O.DISCOUNT::NUMERIC)) DESC;
+```
+
+**Resultado:**
+
+![Resultado Pregunta 6](images/respuesta06.png)
 
 **Comentario:** ...
