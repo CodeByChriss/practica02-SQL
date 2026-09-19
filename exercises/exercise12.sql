@@ -1,0 +1,25 @@
+-- A) Países donde hay clientes pero ningún proveedor
+SELECT
+	COUNTRY AS PAIS
+FROM
+	CUSTOMERS
+EXCEPT
+SELECT
+	COUNTRY AS PAIS
+FROM
+	SUPPLIERS
+ORDER BY
+	PAIS;
+
+-- B) Países donde hay a la vez clientes y proveedores
+SELECT
+	COUNTRY AS PAIS
+FROM
+	CUSTOMERS
+INTERSECT
+SELECT
+	COUNTRY AS PAIS
+FROM
+	SUPPLIERS
+ORDER BY
+	PAIS;
